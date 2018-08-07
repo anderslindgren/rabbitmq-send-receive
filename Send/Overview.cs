@@ -1,6 +1,5 @@
 ﻿using RestSharp.Deserializers;
 /**
-* 
 {
   "management_version": "3.7.7",
   "rates_mode": "basic",
@@ -86,26 +85,24 @@
     }
   ]
 }*/
-internal class Overview
+namespace RabbitREPL
 {
-    [DeserializeAs(Name = "management_version")]
-    string ManagementVersion { get; set; }
-
-    [DeserializeAs(Name = "rabbitmq_version")]
-    string RabbitMQVersion { get; set; }
-
-    [DeserializeAs(Name = "erlang_version")]
-    string ErlangVersion { get; set; }
-
-    [DeserializeAs(Name = "cluster_name")]
-    string ClusterName { get; set; }
-
-    [DeserializeAs(Name = "node")]
-    string Node { get; set; }
-
-    public override string ToString()
+    internal class Overview
     {
-        return string.Format("{0}, {1}, {2}", ClusterName, Node, RabbitMQVersion);
-    }
+        public string ManagementVersion { get; set; }
 
+        public string RabbitmqVersion { get; set; }
+
+        public string ErlangVersion { get; set; }
+
+        public string ClusterName { get; set; }
+
+        public string Node { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("Connected to cluster: {0}, at the node: {1}, running RabbitMQ version: {2}", ClusterName, Node, RabbitmqVersion);
+        }
+
+    }
 }

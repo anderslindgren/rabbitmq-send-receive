@@ -1,16 +1,15 @@
 ﻿using RestSharp.Deserializers;
-
-partial class Send
+namespace RabbitREPL
 {
-    private class User
+
+    internal class User
     {
-        [DeserializeAs(Name = "name")]
         public string Name { get; set; }
 
-        [DeserializeAs(Name = "password_hash")]
+        public string Password { get; set; }
+
         public string PasswordHash { get; set; }
 
-        [DeserializeAs(Name = "tags")]
         public string Tags { get; set; }
 
         public override string ToString()

@@ -23,9 +23,9 @@ class Receive
         using (var connection = factory.CreateConnection())
         {
             IDictionary<string, object> serverProperties = connection.ServerProperties;
-            string clusterName = getValueFromDict(serverProperties, "cluster_name");
-            string product = getValueFromDict(serverProperties, "product");
-            string version = getValueFromDict(serverProperties, "version");
+            string clusterName = GetValueFromDict(serverProperties, "cluster_name");
+            string product = GetValueFromDict(serverProperties, "product");
+            string version = GetValueFromDict(serverProperties, "version");
             Console.WriteLine("Connected to cluster: {0} [{1} - {2}]", clusterName, product, version);
 
             using (var channel = connection.CreateModel())
@@ -49,7 +49,7 @@ class Receive
         }
     }
 
-    private static string getValueFromDict(IDictionary<string, object> dict, string key)
+    private static string GetValueFromDict(IDictionary<string, object> dict, string key)
     {
         string result = "";
         if (dict.TryGetValue(key, out object value))
