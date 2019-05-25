@@ -2,11 +2,18 @@
 {
     internal class PurgeCommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
-        public string Description => 
+        public string Description =>
             "Purge the queue";
-        public void Execute(ref Context context)
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
+
+        public PurgeCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+        public void Execute()
         {
             throw new System.NotImplementedException();
         }

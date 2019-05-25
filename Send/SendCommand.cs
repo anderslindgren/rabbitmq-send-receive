@@ -2,12 +2,19 @@
 {
     internal class SendCommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
-        public string Description => 
+        public string Description =>
             "Send a message";
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
 
-        public void Execute(ref Context context)
+        public SendCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+
+        public void Execute()
         {
             throw new System.NotImplementedException();
         }

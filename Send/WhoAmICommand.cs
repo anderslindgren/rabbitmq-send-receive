@@ -1,15 +1,23 @@
-﻿namespace RabbitREPL
+﻿using System;
+
+namespace RabbitREPL
 {
     internal class WhoAmICommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
         public string Description =>
             "Gives the systems view of who you are.";
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
 
-        public void Execute(ref Context context)
+        public WhoAmICommand(Context context, string[] args)
         {
-            throw new System.NotImplementedException();
+            Context = context;
+            Args = args;
+        }
+
+        public void Execute()
+        {
+            Console.WriteLine("Admin User: {0}\nClient User: {1}", Context.AdminUser, Context.User);
         }
     }
 }

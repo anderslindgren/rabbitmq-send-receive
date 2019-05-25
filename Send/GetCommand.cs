@@ -7,30 +7,37 @@ namespace RabbitREPL
 {
     internal class GetCommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
         public string Description =>
             "user";
-        public void Execute(ref Context context)
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
+
+        public GetCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+        public void Execute()
         {
             string firstParameter = Args.First();
             string[] connectionArgs = Args.Skip(1).ToArray();
             if (firstParameter.Equals("user"))
             {
-                context.User = GetUser(context);
-                if (context.User.Password == null)
+                Context.User = GetUser(Context.RestClient);
+                if (string.IsNullOrEmpty(Context.User.Password))
                 {
-                    Console.Write("Please enter the password for user [{0}]: ", context.User.Name);
-                    context.User.Password = Console.ReadLine();
+                    Console.Write("Please enter the password for user [{0}]: ", Context.User.Username);
+                    Context.User.Password = Console.ReadLine();
                 }
             }
         }
 
-        private User GetUser(Context context)
+        private User GetUser(RestClient rest)
         {
             RestRequest request = new RestRequest("users");
-            IRestResponse<List<User>> userResponse = context.RestClient.Execute<List<User>>(request);
-            List<User> users = userResponse.Data;
+            IRestResponse<List<RabbitUser>> userResponse = rest.Execute<List<RabbitUser>>(request);
+            List<RabbitUser> users = userResponse.Data;
 
             Console.WriteLine(" Index\tName\tTags");
             for (int i = 0; i < users.Count; i++)
@@ -40,7 +47,9 @@ namespace RabbitREPL
             Console.Write("Which user would you like to use? [0]: ");
             string userNo = Console.ReadLine();
             Int32.TryParse(userNo, out int index);
-            return users[index];
+            return new User() {
+                Username = users[index].Name
+            };
         }
     }
 }

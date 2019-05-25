@@ -2,12 +2,18 @@
 {
     internal class BindCommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
         public string Description =>
             "bind exhanges and queues";
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
 
-        public void Execute(ref Context context)
+        public BindCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+        public void Execute()
         {
             throw new System.NotImplementedException();
         }

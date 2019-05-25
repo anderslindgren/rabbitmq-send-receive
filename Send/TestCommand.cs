@@ -2,12 +2,19 @@
 {
     internal class TestCommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
         public string Description =>
             "run some built in tests (alive or health)";
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
 
-        public void Execute(ref Context context)
+        public TestCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+
+        public void Execute()
         {
             throw new System.NotImplementedException();
         }

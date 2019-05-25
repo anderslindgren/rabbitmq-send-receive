@@ -1,13 +1,7 @@
 ﻿using CommandLine;
-using CommandLine.Text;
-using System;
 using RabbitMQ.Client;
-using System.Text;
+using System;
 using System.Collections.Generic;
-using RestSharp;
-using Newtonsoft.Json.Linq;
-using RestSharp.Authenticators;
-using RestSharp.Deserializers;
 using System.Linq;
 
 namespace RabbitREPL
@@ -16,15 +10,17 @@ namespace RabbitREPL
     public class RabbitREPL
     {
         private Context context;
-        private readonly Dictionary<string, ICommand> commands;
 
         public static void Main(string[] args)
         {
             Console.WriteLine("Welcome to RabbitMQ test tool");
             Console.WriteLine("Type 'help' for help");
-            RabbitREPL repl = new RabbitREPL();
             var result = Parser.Default.ParseArguments<Options>(args)
-                .WithParsed(options => repl.StartREPL(options))
+                .WithParsed(options =>
+                {
+                    RabbitREPL repl = new RabbitREPL(options);
+                    repl.StartREPL();
+                })
                 .WithNotParsed(errors =>
                 {
                     Console.WriteLine(errors);
@@ -32,83 +28,109 @@ namespace RabbitREPL
                 });
         }
 
-        public RabbitREPL()
+        public RabbitREPL(Options options)
         {
-            commands = new Dictionary<string, ICommand>
+            Dictionary<string, Type> commands = new Dictionary<string, Type>
             {
-                { "connect", new ConnectCommand() },
-                { "add", new AddCommand() },
-                { "purge", new PurgeCommand() },
-                { "whoami", new WhoAmICommand() },
-                { "remove", new RemoveCommand() },
-                { "test", new TestCommand() },
-                { "get", new GetCommand() },
-                { "set", new SetCommand() },
-                { "bind", new BindCommand() },
-                { "send", new SendCommand() },
-                { "list", new ListCommand() },
-                { "help", new HelpCommand() }
+                { "connect", typeof(ConnectCommand)},
+                { "add", typeof(AddCommand) },
+                { "purge", typeof(PurgeCommand) },
+                { "remove", typeof(RemoveCommand) },
+                { "test", typeof(TestCommand) },
+                { "get", typeof(GetCommand) },
+                { "set", typeof(SetCommand) },
+                { "bind", typeof(BindCommand) },
+                { "send", typeof(SendCommand) },
+                { "list", typeof(ListCommand) },
+                { "whoami", typeof(WhoAmICommand) },
+                { "help", typeof(HelpCommand) }
             };
 
-            context = new Context(commands);
+            context = new Context(options, commands);
         }
 
-        private void StartREPL(Options options)
+        private void StartREPL()
         {
-            string response = "";
+            string commandline;
             string prompt = "";
-            do
+
+            try
             {
-                Console.Write("\n{0}> ", prompt);
-                response = Console.ReadLine();
-
-                if (!string.IsNullOrEmpty(response) && !response.Equals("exit"))
+                do
                 {
-                    ICommand command = ParseRespone(response);
-                    command.Options = options;
-                    command.Execute(ref context);
-                }
+                    Console.WriteLine("Hostname: {0}", context.Hostname);
+                    Console.Write("\n{0}> ", prompt);
+                    commandline = Console.ReadLine();
 
-                /*
-                restClient = GetRestClient(options);
-                GetOverview();
-                User user = GetUser();
+                    if (!string.IsNullOrEmpty(commandline) && !commandline.Equals("exit"))
+                    {
+                        ICommand command = ParseCommand(commandline , context);
+                        try
+                        {
+                            command.Execute();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("shoot, I ran into some problems: " + e.Message);
+                        }
+                    }
 
-                Console.WriteLine("Selected user: {0} [{1}]", user.Name, user.Tags);
+                    /*
+                    restClient = GetRestClient(options);
+                    GetOverview();
+                    User user = GetUser();
 
-                using (var connection = LoginUser(user, options))
+                    Console.WriteLine("Selected user: {0} [{1}]", user.Username, user.Tags);
+
+                    using (var connection = LoginUser(user, options))
+                    {
+                        PrintServerProperties(connection);
+                    }
+                    */
+
+                    prompt = context.GetPrompt();
+
+                } while (commandline != "exit");
+
+            }
+            finally
+            {
+                if (context.Connection != null)
                 {
-                    PrintServerProperties(connection);
+                    context.Connection.Close();
                 }
-                */
-
-                prompt = context.GetPrompt();
-
-            } while (response != "exit");
+            }
         }
 
-        private ICommand ParseRespone(string response)
+        private ICommand ParseCommand(string commandline, Context context)
         {
-            string[] args = response.Split(' ');
-            string commandName = args[0];
-            ICommand command = new UnknownCommand(commandName);
+            string[] args = commandline.Split(' ');
+            string commandName = args.First();
+            string[] commandArgs = args.Skip(1).ToArray();
+            Dictionary<string, Type> commands = context.Commands;
+            ICommand command;
             if (commands.ContainsKey(commandName))
             {
-                command = commands[commandName];
+                Type type = commands[commandName];
+                object[] arguments = new object[] { context, commandArgs };
+                command = (ICommand)Activator.CreateInstance(type, arguments);
             }
-            command.Args = args.Skip(1).ToArray();
-            return command; 
+            else
+            {
+                command = new UnknownCommand(commandline);
+            }
+            return command;
         }
 
 
         private IConnection LoginUser(User user, Options options)
         {
-            Console.Write("Enter password for user {0}: ", user.Name);
+            Console.Write("Enter password for user {0}: ", user.Username);
             string password = Console.ReadLine();
             var factory = new ConnectionFactory()
             {
                 HostName = options.Hostname,
-                UserName = user.Name,
+                UserName = user.Username,
                 Password = password,
                 VirtualHost = options.VirtualHost
             };

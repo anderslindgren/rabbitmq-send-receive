@@ -8,17 +8,28 @@ namespace RabbitREPL
         public string Description =>
             "gives you this help";
 
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
 
-        public void Execute(ref Context context)
+        public HelpCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+
+        public void Execute()
         {
             Array.ForEach(Args, arg => Console.WriteLine("Was called with: " + arg));
-            Console.WriteLine("Connect to a RabbitMQ Cluster bith via REST and via C# lib");
+            Console.WriteLine("Connects to a RabbitMQ Server or Cluster, both via Admin REST API and via the C# library");
             Console.WriteLine();
-            foreach (string command in context.Commands.Keys)
+            Dictionary<string, Type> commands = Context.Commands;
+            foreach (string command in commands.Keys)
             {
-                Console.WriteLine("{0} - {1}", command, context.Commands[command].Description);
+                Type type = commands[command];
+                object[] objectArgs = new object[] { Context, new string[0] };
+                ICommand instance = (ICommand) Activator.CreateInstance(type, objectArgs);
+                Console.WriteLine("{0} - {1}", command, instance.Description);
             }
         }
     }

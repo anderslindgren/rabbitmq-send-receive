@@ -10,44 +10,58 @@ namespace RabbitREPL
 {
     internal class ConnectCommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
         public string Description =>
             "(admin | client [user password])";
-        public void Execute(ref Context context)
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
+
+        public ConnectCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+        public void Execute()
         {
             string firstParameter = Args.First();
             string[] connectionArgs = Args.Skip(1).ToArray();
             if (firstParameter.Equals("admin"))
             {
-                context.RestClient = GetRestClient(Options);
-                GetOverview(context);
+                Context.RestClient = GetRestClient();
+                GetOverview(Context);
             }
             else if (firstParameter.Equals("client"))
             {
-                if (context.User == null)
+                if (Context.User == null)
                 {
-                    context.User = new User()
+                    Context.User = new User()
                     {
-                        Name = connectionArgs[0],
+                        Username = connectionArgs[0],
                         Password = connectionArgs[1],
                     };
                 }
-                context.Connection = GetClientConnection(Options, context);
-                PrintServerProperties(context.Connection);
+                Context.Connection = GetClientConnection();
+                PrintServerProperties(Context.Connection);
             }
         }
 
-        private IConnection GetClientConnection(Options options, Context context)
+        private IConnection GetClientConnection()
         {
             var factory = new ConnectionFactory()
             {
-                HostName = options.Hostname,
-                UserName = context.User.Name,
-                Password = context.User.Password,
-                VirtualHost = context.VirtualHost
+                HostName = Context.Hostname,
+                UserName = Context.User.Username,
+                Password = Context.User.Password,
+                VirtualHost = Context.VirtualHost,
+                Port = 5672
             };
-            Console.WriteLine("Connecting to: {0} with: {1} and virtual host: {2}", factory.HostName, factory.UserName, factory.VirtualHost);
+            Console.WriteLine("Connecting to: {0} with user: {1}[{2}] and virtual host: {3}", 
+                factory.HostName, 
+                factory.UserName, 
+                factory.Password, 
+                factory.VirtualHost);
+
+            Console.WriteLine(factory.Endpoint.ToString());
 
             return factory.CreateConnection();
         }
@@ -61,12 +75,12 @@ namespace RabbitREPL
             Console.WriteLine("Connected to cluster: {0} [{1} - {2}]", clusterName, product, version);
         }
 
-        private RestClient GetRestClient(Options options)
+        private RestClient GetRestClient()
         {
-            var url = string.Format("http://{0}:{1}/api", options.Hostname, options.AdminPort);
+            var url = string.Format("http://{0}:{1}/api", Context.Hostname, Context.AdminPort);
             var client = new RestClient(url)
             {
-                Authenticator = new HttpBasicAuthenticator(options.AdminUser, options.AdminPassword)
+                Authenticator = new HttpBasicAuthenticator(Context.AdminUser.Username, Context.AdminUser.Password)
             };
             return client;
         }

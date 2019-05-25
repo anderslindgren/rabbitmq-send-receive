@@ -2,7 +2,7 @@
   "profiles": {
     "Receive": {
       "commandName": "Project",
-      "commandLineArgs": "batchprocess-mq.utvnet.net mquser_dev Q1FtI5g6XG /"
+      "commandLineArgs": "localhost adde adde /"
     }
   }
 }

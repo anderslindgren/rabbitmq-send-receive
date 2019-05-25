@@ -7,28 +7,41 @@ namespace RabbitREPL
 {
     class ListCommand : ICommand
     {
-        public string[] Args { get; set; }
-        public Options Options { get; set; }
         public string Description =>
-            "list users";
-        public void Execute(ref Context context)
+@"List different properties from the RabbitMQ cluster
+supported commands:
+  list users";
+        private string[] Args { get; set; }
+        private Context Context { get; set; }
+
+        public ListCommand(Context context, string[] args)
+        {
+            Context = context;
+            Args = args;
+        }
+
+        public void Execute()
         {
             string firstParameter = Args.First();
             string[] connectionArgs = Args.Skip(1).ToArray();
             if (firstParameter.Equals("users"))
             {
-                ListUsers(context);
+                ListUsers();
+            }
+            else
+            {
+                Console.WriteLine("Sorry, no can do that.");
             }
         }
 
-        private void ListUsers(Context context)
+        private void ListUsers()
         {
             RestRequest request = new RestRequest("users");
-            IRestResponse<List<User>> userResponse = context.RestClient.Execute<List<User>>(request);
-            List<User> users = userResponse.Data;
+            IRestResponse<List<RabbitUser>> userResponse = Context.RestClient.Execute<List<RabbitUser>>(request);
+            List<RabbitUser> users = userResponse.Data;
 
             Console.WriteLine(" Name\tTags");
-            foreach (User user in users)
+            foreach (RabbitUser user in users)
             {
                 Console.WriteLine(" [{0}]\t{1}", user.Name, user.Tags);
             }
