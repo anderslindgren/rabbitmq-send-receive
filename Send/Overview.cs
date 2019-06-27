@@ -1,5 +1,4 @@
-﻿using RestSharp.Deserializers;
-/**
+﻿/**
 {
   "management_version": "3.7.7",
   "rates_mode": "basic",

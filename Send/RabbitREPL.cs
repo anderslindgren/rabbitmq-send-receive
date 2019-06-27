@@ -3,13 +3,14 @@ using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace RabbitREPL
 {
 
     public class RabbitREPL
     {
-        private Context context;
+        private readonly Context context;
 
         public static void Main(string[] args)
         {
@@ -19,6 +20,7 @@ namespace RabbitREPL
                 .WithParsed(options =>
                 {
                     RabbitREPL repl = new RabbitREPL(options);
+                    repl.Connect();
                     repl.StartREPL();
                 })
                 .WithNotParsed(errors =>
@@ -33,6 +35,7 @@ namespace RabbitREPL
             Dictionary<string, Type> commands = new Dictionary<string, Type>
             {
                 { "connect", typeof(ConnectCommand)},
+                { "overview", typeof(OverviewCommand)},
                 { "add", typeof(AddCommand) },
                 { "purge", typeof(PurgeCommand) },
                 { "remove", typeof(RemoveCommand) },
@@ -47,19 +50,19 @@ namespace RabbitREPL
             };
 
             context = new Context(options, commands);
+
         }
 
         private void StartREPL()
         {
             string commandline;
-            string prompt = "";
+            string prompt = context.GetPrompt();
 
             try
             {
                 do
                 {
-                    Console.WriteLine("Hostname: {0}", context.Hostname);
-                    Console.Write("\n{0}> ", prompt);
+                    Console.Write("{0}> ", prompt);
                     commandline = Console.ReadLine();
 
                     if (!string.IsNullOrEmpty(commandline) && !commandline.Equals("exit"))
@@ -72,6 +75,7 @@ namespace RabbitREPL
                         catch (Exception e)
                         {
                             Console.WriteLine("shoot, I ran into some problems: " + e.Message);
+                            Console.WriteLine(e.StackTrace);
                         }
                     }
 
@@ -102,6 +106,14 @@ namespace RabbitREPL
             }
         }
 
+        private void Connect()
+        {
+            ConnectCommand cc = new ConnectCommand(context, new string[0]);
+            context.AdminClient = cc.GetRestClient();
+            //context.Connection = cc.GetClientConnection();
+            //PrintServerProperties(context.Connection);
+        }
+
         private ICommand ParseCommand(string commandline, Context context)
         {
             string[] args = commandline.Split(' ');
@@ -120,6 +132,26 @@ namespace RabbitREPL
                 command = new UnknownCommand(commandline);
             }
             return command;
+        }
+
+        private static void PrintServerProperties(IConnection connection)
+        {
+            IDictionary<string, object> serverProperties = connection.ServerProperties;
+            string clusterName = GetValueFromDict(serverProperties, "cluster_name");
+            string product = GetValueFromDict(serverProperties, "product");
+            string version = GetValueFromDict(serverProperties, "version");
+            Console.WriteLine("Connected to cluster: {0} [{1} - {2}]", clusterName, product, version);
+        }
+
+        private static string GetValueFromDict(IDictionary<string, object> dict, string key)
+        {
+            string result = "";
+            if (dict.TryGetValue(key, out object value))
+            {
+                result = Encoding.UTF8.GetString((byte[])value);
+            }
+
+            return result;
         }
 
 

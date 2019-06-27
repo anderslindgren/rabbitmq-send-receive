@@ -1,5 +1,4 @@
-﻿using RestSharp.Deserializers;
-namespace RabbitREPL
+﻿namespace RabbitREPL
 {
 
     internal class RabbitUser

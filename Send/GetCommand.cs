@@ -24,7 +24,7 @@ namespace RabbitREPL
             string[] connectionArgs = Args.Skip(1).ToArray();
             if (firstParameter.Equals("user"))
             {
-                Context.User = GetUser(Context.RestClient);
+                Context.User = GetUser(Context.AdminClient);
                 if (string.IsNullOrEmpty(Context.User.Password))
                 {
                     Console.Write("Please enter the password for user [{0}]: ", Context.User.Username);

@@ -10,7 +10,8 @@ namespace RabbitREPL
         public string Description =>
 @"List different properties from the RabbitMQ cluster
 supported commands:
-  list users";
+  list users
+  list vhosts";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 
@@ -23,10 +24,14 @@ supported commands:
         public void Execute()
         {
             string firstParameter = Args.First();
-            string[] connectionArgs = Args.Skip(1).ToArray();
+            string[] listArgs = Args.Skip(1).ToArray();
             if (firstParameter.Equals("users"))
             {
                 ListUsers();
+            }
+            else if (firstParameter.Equals("vhosts"))
+            {
+                ListVHosts();
             }
             else
             {
@@ -37,13 +42,24 @@ supported commands:
         private void ListUsers()
         {
             RestRequest request = new RestRequest("users");
-            IRestResponse<List<RabbitUser>> userResponse = Context.RestClient.Execute<List<RabbitUser>>(request);
+            IRestResponse<List<RabbitUser>> userResponse = Context.AdminClient.Execute<List<RabbitUser>>(request);
             List<RabbitUser> users = userResponse.Data;
 
             Console.WriteLine(" Name\tTags");
             foreach (RabbitUser user in users)
             {
-                Console.WriteLine(" [{0}]\t{1}", user.Name, user.Tags);
+                Console.WriteLine(" {0}\t[{1}]", user.Name, user.Tags);
+            }
+        }
+        private void ListVHosts()
+        {
+            RestRequest request = new RestRequest("vhosts");
+            IRestResponse<List<VHost>> userResponse = Context.AdminClient.Execute<List<VHost>>(request);
+            List<VHost> vhosts = userResponse.Data;
+
+            foreach (VHost vhost in vhosts)
+            {
+                Console.WriteLine($"{vhost}\n");
             }
         }
     }

@@ -7,7 +7,7 @@ namespace RabbitREPL
 {
     internal class Context
     {
-        public RestClient RestClient { get; internal set; }
+        public RestClient AdminClient { get; internal set; }
         public IConnection Connection { get; internal set; }
         public User AdminUser { get; }
         public User User { get; internal set; }
@@ -44,17 +44,16 @@ namespace RabbitREPL
         internal string GetPrompt()
         {
             string result = "";
-            if (RestClient != null)
+            if (User != null)
             {
-                result = string.Format("Rest: [{0}]\n", RestClient.BaseUrl);
-            }
-            if (Connection == null && User != null)
-            {
-                result += string.Format("Client: [{0}]\n", User.Username);
-            }
-            else if (Connection != null && User != null)
-            {
-                result += string.Format("Client: [{0} connected]\n", User.Username);
+                if (Connection == null)
+                {
+                    result += string.Format("not connected");
+                }
+                else if (Connection != null)
+                {
+                    result += string.Format("connected");
+                }
             }
             return result;
         }

@@ -2,7 +2,7 @@
 
 ## Start local rabbit in Docker
 
-    docker run -d -h kanin1 --name kanin1 -p 8080:15672 -e RABBITMQ_ERLANG_COOKIE='kaka' rabbitmq:management
+    docker run -d -h kanin1 --name kanin1 -p 5672:5672 -p 8080:15672 -e RABBITMQ_ERLANG_COOKIE='kaka' rabbitmq:management
 
 ## Commands
 Commands with `(*` is not yet implemented

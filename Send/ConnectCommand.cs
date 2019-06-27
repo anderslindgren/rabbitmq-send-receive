@@ -27,25 +27,22 @@ namespace RabbitREPL
             string[] connectionArgs = Args.Skip(1).ToArray();
             if (firstParameter.Equals("admin"))
             {
-                Context.RestClient = GetRestClient();
+                Context.AdminClient = GetRestClient();
                 GetOverview(Context);
             }
             else if (firstParameter.Equals("client"))
             {
-                if (Context.User == null)
+                Context.User = new User()
                 {
-                    Context.User = new User()
-                    {
-                        Username = connectionArgs[0],
-                        Password = connectionArgs[1],
-                    };
-                }
+                    Username = connectionArgs[0],
+                    Password = connectionArgs[1],
+                };
                 Context.Connection = GetClientConnection();
                 PrintServerProperties(Context.Connection);
             }
         }
 
-        private IConnection GetClientConnection()
+        public IConnection GetClientConnection()
         {
             var factory = new ConnectionFactory()
             {
@@ -55,7 +52,7 @@ namespace RabbitREPL
                 VirtualHost = Context.VirtualHost,
                 Port = 5672
             };
-            Console.WriteLine("Connecting to: {0} with user: {1}[{2}] and virtual host: {3}", 
+            Console.WriteLine("Connecting to: {0} with user: {1} [{2}] and virtual host: {3}", 
                 factory.HostName, 
                 factory.UserName, 
                 factory.Password, 
@@ -75,7 +72,7 @@ namespace RabbitREPL
             Console.WriteLine("Connected to cluster: {0} [{1} - {2}]", clusterName, product, version);
         }
 
-        private RestClient GetRestClient()
+        public RestClient GetRestClient()
         {
             var url = string.Format("http://{0}:{1}/api", Context.Hostname, Context.AdminPort);
             var client = new RestClient(url)
@@ -88,7 +85,7 @@ namespace RabbitREPL
         private void GetOverview(Context context)
         {
             RestRequest request = new RestRequest("overview");
-            IRestResponse<Overview> userResponse = context.RestClient.Execute<Overview>(request);
+            IRestResponse<Overview> userResponse = context.AdminClient.Execute<Overview>(request);
             Overview value = userResponse.Data;
             Console.WriteLine(value.ToString());
         }
