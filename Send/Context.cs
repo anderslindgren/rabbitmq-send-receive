@@ -9,6 +9,7 @@ namespace RabbitREPL
     {
         public RestClient AdminClient { get; internal set; }
         public IConnection Connection { get; internal set; }
+        public IModel Channel { get; internal set; }
         public User AdminUser { get; }
         public User User { get; internal set; }
         public string Hostname { get; }

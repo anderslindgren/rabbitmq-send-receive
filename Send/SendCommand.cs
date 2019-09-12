@@ -1,4 +1,8 @@
-﻿namespace RabbitREPL
+﻿using RabbitMQ.Client;
+using System;
+using System.Text;
+
+namespace RabbitREPL
 {
     internal class SendCommand : ICommand
     {
@@ -16,7 +20,20 @@
 
         public void Execute()
         {
-            throw new System.NotImplementedException();
+            var channel = Context.Channel;
+            var qs = channel.QueueDeclare(queue: "hello-from-ehg", durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+            //var qs = channel.QueueDeclarePassive("hello-from-ehg");
+            Console.WriteLine("{0} {1} {2}", qs.QueueName, qs.MessageCount, qs.ConsumerCount);
+
+            string message = "Hello World!";
+            var body = Encoding.UTF8.GetBytes(message);
+
+            for (int i = 0; i < 10; i++)
+            {
+                channel.BasicPublish(exchange: "", routingKey: "hello-from-ehg", basicProperties: null, body: body);
+                Console.WriteLine(" [{0}]\tSent {1}", i, message);
+            }
         }
     }
 }

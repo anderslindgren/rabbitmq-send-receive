@@ -11,7 +11,7 @@ namespace RabbitREPL
     internal class ConnectCommand : ICommand
     {
         public string Description =>
-            "(admin | client [user password])";
+            "Connects the current user to the amqp port";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 
@@ -23,23 +23,8 @@ namespace RabbitREPL
 
         public void Execute()
         {
-            string firstParameter = Args.First();
-            string[] connectionArgs = Args.Skip(1).ToArray();
-            if (firstParameter.Equals("admin"))
-            {
-                Context.AdminClient = GetRestClient();
-                GetOverview(Context);
-            }
-            else if (firstParameter.Equals("client"))
-            {
-                Context.User = new User()
-                {
-                    Username = connectionArgs[0],
-                    Password = connectionArgs[1],
-                };
-                Context.Connection = GetClientConnection();
-                PrintServerProperties(Context.Connection);
-            }
+            Context.Connection = GetClientConnection();
+            PrintServerProperties(Context.Connection);
         }
 
         public IConnection GetClientConnection()

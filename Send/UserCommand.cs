@@ -5,14 +5,16 @@ using System.Linq;
 
 namespace RabbitREPL
 {
-    internal class GetCommand : ICommand
+    internal class UserCommand : ICommand
     {
         public string Description =>
-            "user";
+            @"select user from system
+              add new user
+              delete user";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 
-        public GetCommand(Context context, string[] args)
+        public UserCommand(Context context, string[] args)
         {
             Context = context;
             Args = args;
@@ -21,8 +23,8 @@ namespace RabbitREPL
         public void Execute()
         {
             string firstParameter = Args.First();
-            string[] connectionArgs = Args.Skip(1).ToArray();
-            if (firstParameter.Equals("user"))
+            string[] userArgs = Args.Skip(1).ToArray();
+            if (firstParameter.Equals("select"))
             {
                 Context.User = GetUser(Context.AdminClient);
                 if (string.IsNullOrEmpty(Context.User.Password))
@@ -30,6 +32,14 @@ namespace RabbitREPL
                     Console.Write("Please enter the password for user [{0}]: ", Context.User.Username);
                     Context.User.Password = Console.ReadLine();
                 }
+            }
+            else if (firstParameter.Equals("add"))
+            {
+
+            }
+            else if (firstParameter.Equals("delete"))
+            {
+
             }
         }
 

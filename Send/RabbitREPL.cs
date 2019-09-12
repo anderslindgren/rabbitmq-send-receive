@@ -35,15 +35,17 @@ namespace RabbitREPL
             Dictionary<string, Type> commands = new Dictionary<string, Type>
             {
                 { "connect", typeof(ConnectCommand)},
+                { "channel", typeof(ChannelCommand)},
                 { "overview", typeof(OverviewCommand)},
+                { "user", typeof(UserCommand) },
                 { "add", typeof(AddCommand) },
                 { "purge", typeof(PurgeCommand) },
                 { "remove", typeof(RemoveCommand) },
                 { "test", typeof(TestCommand) },
-                { "get", typeof(GetCommand) },
                 { "set", typeof(SetCommand) },
                 { "bind", typeof(BindCommand) },
                 { "send", typeof(SendCommand) },
+                { "receive", typeof(ReceiveCommand) },
                 { "list", typeof(ListCommand) },
                 { "whoami", typeof(WhoAmICommand) },
                 { "help", typeof(HelpCommand) }
@@ -152,23 +154,6 @@ namespace RabbitREPL
             }
 
             return result;
-        }
-
-
-        private IConnection LoginUser(User user, Options options)
-        {
-            Console.Write("Enter password for user {0}: ", user.Username);
-            string password = Console.ReadLine();
-            var factory = new ConnectionFactory()
-            {
-                HostName = options.Hostname,
-                UserName = user.Username,
-                Password = password,
-                VirtualHost = options.VirtualHost
-            };
-            Console.WriteLine("Connecting to: {0} with: {1}", factory.HostName, factory.UserName);
-
-            return factory.CreateConnection();
         }
 
 
