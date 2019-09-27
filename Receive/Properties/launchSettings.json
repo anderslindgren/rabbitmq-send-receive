@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Receive": {
-      "commandName": "Project",
-      "commandLineArgs": "localhost adde adde /"
-    }
-  }
-}
