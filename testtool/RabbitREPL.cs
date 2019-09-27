@@ -1,9 +1,7 @@
 ﻿using CommandLine;
-using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace RabbitREPL
 {
@@ -34,21 +32,21 @@ namespace RabbitREPL
         {
             Dictionary<string, Type> commands = new Dictionary<string, Type>
             {
-                { "connect", typeof(ConnectCommand)},
-                { "channel", typeof(ChannelCommand)},
-                { "overview", typeof(OverviewCommand)},
-                { "user", typeof(UserCommand) },
-                { "add", typeof(AddCommand) },
-                { "purge", typeof(PurgeCommand) },
-                { "remove", typeof(RemoveCommand) },
-                { "test", typeof(TestCommand) },
-                { "set", typeof(SetCommand) },
-                { "bind", typeof(BindCommand) },
-                { "send", typeof(SendCommand) },
-                { "receive", typeof(ReceiveCommand) },
-                { "list", typeof(ListCommand) },
-                { "whoami", typeof(WhoAmICommand) },
-                { "help", typeof(HelpCommand) }
+                { "connect",  typeof(ConnectCommand) },
+                { "channel",  typeof(ChannelCommand) },
+                { "overview", typeof(OverviewCommand) },
+                { "user",     typeof(UserCommand) },
+                { "add",      typeof(AddCommand) },
+                { "purge",    typeof(PurgeCommand) },
+                { "remove",   typeof(RemoveCommand) },
+                { "test",     typeof(TestCommand) },
+                { "set",      typeof(SetCommand) },
+                { "bind",     typeof(BindCommand) },
+                { "send",     typeof(SendCommand) },
+                { "receive",  typeof(ReceiveCommand) },
+                { "list",     typeof(ListCommand) },
+                { "whoami",   typeof(WhoAmICommand) },
+                { "help",     typeof(HelpCommand) }
             };
 
             context = new Context(options, commands);
@@ -81,19 +79,6 @@ namespace RabbitREPL
                         }
                     }
 
-                    /*
-                    restClient = GetRestClient(options);
-                    GetOverview();
-                    User user = GetUser();
-
-                    Console.WriteLine("Selected user: {0} [{1}]", user.Username, user.Tags);
-
-                    using (var connection = LoginUser(user, options))
-                    {
-                        PrintServerProperties(connection);
-                    }
-                    */
-
                     prompt = context.GetPrompt();
 
                 } while (commandline != "exit");
@@ -112,8 +97,6 @@ namespace RabbitREPL
         {
             ConnectCommand cc = new ConnectCommand(context, new string[0]);
             context.AdminClient = cc.GetRestClient();
-            //context.Connection = cc.GetClientConnection();
-            //PrintServerProperties(context.Connection);
         }
 
         private ICommand ParseCommand(string commandline, Context context)
@@ -135,66 +118,5 @@ namespace RabbitREPL
             }
             return command;
         }
-
-        private static void PrintServerProperties(IConnection connection)
-        {
-            IDictionary<string, object> serverProperties = connection.ServerProperties;
-            string clusterName = GetValueFromDict(serverProperties, "cluster_name");
-            string product = GetValueFromDict(serverProperties, "product");
-            string version = GetValueFromDict(serverProperties, "version");
-            Console.WriteLine("Connected to cluster: {0} [{1} - {2}]", clusterName, product, version);
-        }
-
-        private static string GetValueFromDict(IDictionary<string, object> dict, string key)
-        {
-            string result = "";
-            if (dict.TryGetValue(key, out object value))
-            {
-                result = Encoding.UTF8.GetString((byte[])value);
-            }
-
-            return result;
-        }
-
-
-
-        private void Run(Options options)
-        {
-            var factory = new ConnectionFactory()
-            {
-                HostName = options.Hostname,
-                UserName = options.User,
-                Password = options.Password,
-                VirtualHost = options.VirtualHost
-            };
-            Console.WriteLine("Connecting to: {0} using user: {1} and virtual host: {2}", factory.HostName, factory.UserName, factory.VirtualHost);
-
-            using (var connection = factory.CreateConnection())
-            {
-
-                using (var channel = connection.CreateModel())
-                {
-                    var qs = channel.QueueDeclarePassive("hello-from-ehg");
-                    Console.WriteLine("{0} {1} {2}", qs.QueueName, qs.MessageCount, qs.ConsumerCount);
-                    /*
-                    channel.QueueDeclare(queue: "hello-from-ehg", durable: false, exclusive: false, autoDelete: false, arguments: null);
-
-                    string message = "Hello World!";
-                    var body = Encoding.UTF8.GetBytes(message);
-
-                    for (int i = 0; i < 10; i++)
-                    {
-                        channel.BasicPublish(exchange: "", routingKey: "hello-from-ehg", basicProperties: null, body: body);
-                        Console.WriteLine(" [x] Sent {0}", message);
-                    }
-                    */
-                }
-            }
-
-            Console.WriteLine(" Press [enter] to exit.");
-            Console.ReadLine();
-        }
-
     }
-
 }
