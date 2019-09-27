@@ -1,4 +1,6 @@
 ﻿using CommandLine;
+using RestSharp;
+using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace RabbitREPL
                 .WithParsed(options =>
                 {
                     RabbitREPL repl = new RabbitREPL(options);
-                    repl.Connect();
+                    repl.ConnectAdmin();
                     repl.StartREPL();
                 })
                 .WithNotParsed(errors =>
@@ -74,7 +76,7 @@ namespace RabbitREPL
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("shoot, I ran into some problems: " + e.Message);
+                            Console.WriteLine("!!!>>>: {0}", e.Message);
                             Console.WriteLine(e.StackTrace);
                         }
                     }
@@ -93,10 +95,14 @@ namespace RabbitREPL
             }
         }
 
-        private void Connect()
+        private void ConnectAdmin()
         {
-            ConnectCommand cc = new ConnectCommand(context, new string[0]);
-            context.AdminClient = cc.GetRestClient();
+            string url = string.Format("http://{0}:{1}/api", context.Hostname, context.AdminPort);
+            Console.WriteLine("Setting up Admin interface at \"{0}\" with user: {1}", url, context.AdminUser);
+            context.AdminClient = new RestClient(url)
+            {
+                Authenticator = new HttpBasicAuthenticator(context.AdminUser.Username, context.AdminUser.Password)
+            };
         }
 
         private ICommand ParseCommand(string commandline, Context context)
