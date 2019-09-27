@@ -59,24 +59,6 @@ namespace RabbitREPL
             Console.WriteLine("Connected to cluster: {0} [{1} - {2}]", clusterName, product, version);
         }
 
-        public RestClient GetRestClient()
-        {
-            var url = string.Format("http://{0}:{1}/api", Context.Hostname, Context.AdminPort);
-            var client = new RestClient(url)
-            {
-                Authenticator = new HttpBasicAuthenticator(Context.AdminUser.Username, Context.AdminUser.Password)
-            };
-            return client;
-        }
-
-        private void GetOverview(Context context)
-        {
-            RestRequest request = new RestRequest("overview");
-            IRestResponse<Overview> userResponse = context.AdminClient.Execute<Overview>(request);
-            Overview value = userResponse.Data;
-            Console.WriteLine(value.ToString());
-        }
-
         private static string GetValueFromDict(IDictionary<string, object> dict, string key)
         {
             string result = "";
