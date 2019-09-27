@@ -4,6 +4,8 @@
     {
         string Description { get; }
 
+        string DetailedDescription { get; }
+
         void Execute();
     }
 }

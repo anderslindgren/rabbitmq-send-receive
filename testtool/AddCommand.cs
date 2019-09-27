@@ -4,6 +4,8 @@
     {
         public string Description =>
             "Add a User";
+        public string DetailedDescription =>
+            @"";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

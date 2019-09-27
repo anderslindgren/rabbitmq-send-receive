@@ -9,6 +9,8 @@ namespace RabbitREPL
         public string Description => 
             @"Declare a channel";
 
+        public string DetailedDescription =>
+            @"";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

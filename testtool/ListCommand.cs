@@ -8,8 +8,9 @@ namespace RabbitREPL
     class ListCommand : ICommand
     {
         public string Description =>
-@"List different properties from the RabbitMQ cluster
-supported commands:
+            "List different properties from the RabbitMQ cluster";
+        public string DetailedDescription =>
+            @"list commands:
   list users
   list vhosts";
         private string[] Args { get; set; }

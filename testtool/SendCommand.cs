@@ -8,6 +8,8 @@ namespace RabbitREPL
     {
         public string Description =>
             "Send a message";
+        public string DetailedDescription =>
+            @"";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Send": {
+    "TestTool": {
       "commandName": "Project",
       "commandLineArgs": "-h localhost -a 8080 -A guest -P guest -v /"
     }

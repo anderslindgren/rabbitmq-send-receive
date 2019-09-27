@@ -12,6 +12,8 @@ namespace RabbitREPL
     {
         public string Description =>
             "get system overview";
+        public string DetailedDescription =>
+            @"";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

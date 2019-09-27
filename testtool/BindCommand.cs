@@ -4,6 +4,8 @@
     {
         public string Description =>
             "bind exhanges and queues";
+        public string DetailedDescription =>
+            @"";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

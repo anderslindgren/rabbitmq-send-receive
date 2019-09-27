@@ -8,9 +8,13 @@ namespace RabbitREPL
     internal class UserCommand : ICommand
     {
         public string Description =>
-            @"select user from system
-              add new user
-              delete user";
+            "User commands";
+        public string DetailedDescription =>
+@"
+  select            - Select a user already defined in the system. You will be prompted for the password.
+  list              - list all defined users in the system.
+  add <username>    - Add new user.
+  delete <username> - Delete a user.";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

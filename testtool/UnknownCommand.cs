@@ -6,6 +6,8 @@ namespace RabbitREPL
     {
         public string Description =>
             "Unknown";
+        public string DetailedDescription =>
+            @"";
         private readonly string command;
 
         public UnknownCommand(string command)

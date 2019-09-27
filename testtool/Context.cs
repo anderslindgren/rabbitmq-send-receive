@@ -44,19 +44,14 @@ namespace RabbitREPL
 
         internal string GetPrompt()
         {
-            string result = "";
+            string result = "TestTool";
             if (User != null)
             {
-                if (Connection == null)
-                {
-                    result += string.Format("not connected");
-                }
-                else if (Connection != null)
-                {
-                    result += string.Format("connected");
-                }
+                result += GetConnetionStatus();
             }
             return result;
         }
+
+        internal string GetConnetionStatus() => Connection == null || !Connection.IsOpen ? " [Not Connected]" : " [Connected]";
     }
 }

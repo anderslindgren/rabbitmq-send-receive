@@ -8,6 +8,8 @@ namespace RabbitREPL
     {
         public string Description =>
             "run some built in tests (alive or health)";
+        public string DetailedDescription =>
+            @"";
         private string[] Args { get; set; }
         private Context Context { get; set; }
         private string vhost;

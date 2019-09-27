@@ -12,6 +12,8 @@ namespace RabbitREPL
     {
         public string Description =>
             "Connects the current user to the amqp port";
+        public string DetailedDescription =>
+            @"";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 
