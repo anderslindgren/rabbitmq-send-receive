@@ -16,8 +16,6 @@ namespace RabbitREPL
         public int AdminPort { get; }
         public string VirtualHost { get; internal set; }
 
-        private readonly Dictionary<string, Type> commands;
-
         public Dictionary<string, Type> Commands
         {
             get
@@ -31,6 +29,7 @@ namespace RabbitREPL
                     return TestCommands;
                 }
             }
+            internal set { }
         }
 
         public Dictionary<string, Type> AdminCommands { get; private set; }
@@ -74,7 +73,7 @@ namespace RabbitREPL
         {
             AdminCommands = new Dictionary<string, Type>
             {
-                { "overview", typeof(OverviewCommand) },
+                { "overview", typeof(OverviewCommand)  },
                 // cluster-name
                 // nodes
                 // extensions
@@ -87,34 +86,35 @@ namespace RabbitREPL
                 // bindings
                 // vhosts
                 // users
-                { "user",     typeof(UserCommand) },
-                { "whoami",   typeof(WhoAmICommand) },
+                { "user",     typeof(UserCommand)      },
+                { "whoami",   typeof(WhoAmICommand)    },
                 // permissions
                 // topic-permissions
                 // parameters
                 // global-parameters
                 // policies
                 // operator-policies
-                { "alive",    typeof(AliveCommand) },
+                { "alive",    typeof(AliveCommand)     },
                 // healthchecks
                 // vhost-limits
-                { "test",     typeof(TestCommand) },
+                { "test",     typeof(TestCommand)      },
 
-                { "list",     typeof(ListCommand) },
-
-                { "help",     typeof(TestHelpCommand) }
+                { "list",     typeof(ListCommand)      },
+                { "help",     typeof(AdminHelpCommand) }
             };
 
             TestCommands = new Dictionary<string, Type>
             {
-                { "admin",    typeof(AdminCommand) },
-                { "connect",  typeof(ConnectCommand) },
-                { "channel",  typeof(ChannelCommand) },
-                { "bind",     typeof(BindCommand) },
-                { "send",     typeof(SendCommand) },
-                { "receive",  typeof(ReceiveCommand) },
-                { "list",     typeof(ListCommand) },
-                { "whoami",   typeof(WhoAmICommand) },
+                { "admin",    typeof(AdminCommand)    },
+                { "connect",  typeof(ConnectCommand)  },
+                { "channel",  typeof(ChannelCommand)  },
+                { "exchange", typeof(ExchangeCommand) },
+                { "queue",    typeof(QueueCommand)    },
+                { "bind",     typeof(BindCommand)     },
+                { "send",     typeof(SendCommand)     },
+                { "receive",  typeof(ReceiveCommand)  },
+                { "list",     typeof(ListCommand)     },
+                { "whoami",   typeof(WhoAmICommand)   },
 
                 { "help",     typeof(TestHelpCommand) }
             };

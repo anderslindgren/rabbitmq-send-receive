@@ -2,9 +2,9 @@
 {
     class AdminCommand : ICommand
     {
-        public string Description => "";
+        public string Description => "Switches to Administration Mode";
 
-        public string DetailedDescription => @"";
+        public string DetailedDescription => @"In Administration Mode you will use the REST API.";
 
         private string[] Args { get; set; }
         private Context Context { get; set; }

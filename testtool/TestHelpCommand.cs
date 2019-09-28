@@ -6,10 +6,25 @@ namespace RabbitREPL
     class TestHelpCommand : ICommand
     {
         public string Description =>
-            "gives you this help";
+            "Help about the AMQP Test based commands";
 
         public string DetailedDescription =>
-            @"";
+@"Here is a list of all the Test commands that is planned to be implemented:
+
+    admin
+    user
+    connect
+    channel
+    exchange
+    queue
+    bind
+    send
+    receive
+    whoami
+
+    list (??)
+    help
+";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

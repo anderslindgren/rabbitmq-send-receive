@@ -6,10 +6,40 @@ namespace RabbitREPL
     class AdminHelpCommand : ICommand
     {
         public string Description =>
-            "gives you this help";
+            "Help abount the Administrator based commands";
 
         public string DetailedDescription =>
-            @"";
+@"Here is a list of all Administrative commands that is planned to be implemented:
+
+    overview
+    // cluster-name
+    // nodes
+    // extensions
+    // definitions
+    // connections
+    // channels
+    // consumers
+    // exchanges
+    // queues
+    // bindings
+    // vhosts
+    // users
+    whoami
+    // permissions
+    // topic-permissions
+    // parameters
+    // global-parameters
+    // policies
+    // operator-policies
+    alive
+    // healthchecks
+    // vhost-limits
+    test
+
+    list
+
+    help
+";
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

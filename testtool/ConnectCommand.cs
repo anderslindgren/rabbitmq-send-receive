@@ -26,8 +26,14 @@ as it will introduce a lot of network roundtrips and overhead.";
 
         public void Execute()
         {
-            Context.Connection = GetClientConnection();
-            PrintServerProperties(Context.Connection);
+            IConnection conn = GetClientConnection();
+            PrintServerProperties(conn);
+
+            Console.Write("Creating a default Channel... ");
+            IModel channel = conn.CreateModel();
+            Context.Connection = conn;
+            Context.Channel = channel;
+            Console.WriteLine("done.");
         }
 
         public IConnection GetClientConnection()
@@ -45,8 +51,6 @@ as it will introduce a lot of network roundtrips and overhead.";
                 factory.UserName, 
                 factory.Password, 
                 factory.VirtualHost);
-
-            Console.WriteLine(factory.Endpoint.ToString());
 
             return factory.CreateConnection();
         }
