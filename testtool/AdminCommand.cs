@@ -1,6 +1,6 @@
 ﻿namespace RabbitREPL
 {
-    class TestCommand : ICommand
+    class AdminCommand : ICommand
     {
         public string Description => "";
 
@@ -9,7 +9,7 @@
         private string[] Args { get; set; }
         private Context Context { get; set; }
 
-        public TestCommand(Context context, string[] args)
+        public AdminCommand(Context context, string[] args)
         {
             Context = context;
             Args = args;
@@ -17,7 +17,7 @@
 
         public void Execute()
         {
-            Context.TestMode();
+            Context.AdminMode();
         }
     }
 }

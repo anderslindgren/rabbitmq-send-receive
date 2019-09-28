@@ -15,11 +15,39 @@ namespace RabbitREPL
         public string Hostname { get; }
         public int AdminPort { get; }
         public string VirtualHost { get; internal set; }
-        public Dictionary<string, Type> Commands { get; }
 
-        public Context(Options options, Dictionary<string, Type> commands)
+        private readonly Dictionary<string, Type> commands;
+
+        public Dictionary<string, Type> Commands
         {
-            Commands = commands;
+            get
+            {
+                if (State == MODES.ADMIN)
+                {
+                    return AdminCommands;
+                }
+                else
+                {
+                    return TestCommands;
+                }
+            }
+        }
+
+        public Dictionary<string, Type> AdminCommands { get; private set; }
+        public Dictionary<string, Type> TestCommands { get; private set; }
+
+        public void AdminMode() => State = MODES.ADMIN;
+        public void TestMode() => State = MODES.TEST;
+
+        private enum MODES
+        {
+            ADMIN, TEST
+        }
+        private MODES State = MODES.ADMIN;
+
+        public Context(Options options)
+        {
+            DefineCommands();
             AdminUser = new User()
             {
                 Username = options.AdminUser,
@@ -42,10 +70,61 @@ namespace RabbitREPL
             }
         }
 
+        private void DefineCommands()
+        {
+            AdminCommands = new Dictionary<string, Type>
+            {
+                { "overview", typeof(OverviewCommand) },
+                // cluster-name
+                // nodes
+                // extensions
+                // definitions
+                // connections
+                // channels
+                // consumers
+                // exchanges
+                // queues
+                // bindings
+                // vhosts
+                // users
+                { "user",     typeof(UserCommand) },
+                { "whoami",   typeof(WhoAmICommand) },
+                // permissions
+                // topic-permissions
+                // parameters
+                // global-parameters
+                // policies
+                // operator-policies
+                { "alive",    typeof(AliveCommand) },
+                // healthchecks
+                // vhost-limits
+                { "test",     typeof(TestCommand) },
+
+                { "list",     typeof(ListCommand) },
+
+                { "help",     typeof(TestHelpCommand) }
+            };
+
+            TestCommands = new Dictionary<string, Type>
+            {
+                { "admin",    typeof(AdminCommand) },
+                { "connect",  typeof(ConnectCommand) },
+                { "channel",  typeof(ChannelCommand) },
+                { "bind",     typeof(BindCommand) },
+                { "send",     typeof(SendCommand) },
+                { "receive",  typeof(ReceiveCommand) },
+                { "list",     typeof(ListCommand) },
+                { "whoami",   typeof(WhoAmICommand) },
+
+                { "help",     typeof(TestHelpCommand) }
+            };
+
+        }
+
         internal string GetPrompt()
         {
-            string result = "TestTool";
-            if (User != null)
+            string result = State.ToString();
+            if (State == MODES.TEST && User != null)
             {
                 result += GetConnetionStatus();
             }

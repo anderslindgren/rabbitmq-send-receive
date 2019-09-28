@@ -10,7 +10,11 @@ namespace RabbitREPL
             @"Declare a channel";
 
         public string DetailedDescription =>
-            @"";
+@"Channels are also meant to be long-lived but since many recoverable protocol errors will result in channel closure, 
+channel lifespan could be shorter than that of its connection. 
+Closing and opening new channels per operation is usually unnecessary but can be appropriate. 
+When in doubt, consider reusing channels first.";
+
         private string[] Args { get; set; }
         private Context Context { get; set; }
 

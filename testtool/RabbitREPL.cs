@@ -32,26 +32,8 @@ namespace RabbitREPL
 
         public RabbitREPL(Options options)
         {
-            Dictionary<string, Type> commands = new Dictionary<string, Type>
-            {
-                { "connect",  typeof(ConnectCommand) },
-                { "channel",  typeof(ChannelCommand) },
-                { "overview", typeof(OverviewCommand) },
-                { "user",     typeof(UserCommand) },
-                { "add",      typeof(AddCommand) },
-                { "purge",    typeof(PurgeCommand) },
-                { "remove",   typeof(RemoveCommand) },
-                { "test",     typeof(TestCommand) },
-                { "set",      typeof(SetCommand) },
-                { "bind",     typeof(BindCommand) },
-                { "send",     typeof(SendCommand) },
-                { "receive",  typeof(ReceiveCommand) },
-                { "list",     typeof(ListCommand) },
-                { "whoami",   typeof(WhoAmICommand) },
-                { "help",     typeof(HelpCommand) }
-            };
 
-            context = new Context(options, commands);
+            context = new Context(options);
 
         }
 
@@ -90,6 +72,10 @@ namespace RabbitREPL
             {
                 if (context.Connection != null)
                 {
+                    if (context.Channel != null)
+                    {
+                        context.Channel.Close();
+                    }
                     context.Connection.Close();
                 }
             }

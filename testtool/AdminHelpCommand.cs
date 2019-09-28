@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RabbitREPL
 {
-    class HelpCommand : ICommand
+    class AdminHelpCommand : ICommand
     {
         public string Description =>
             "gives you this help";
@@ -13,7 +13,7 @@ namespace RabbitREPL
         private string[] Args { get; set; }
         private Context Context { get; set; }
 
-        public HelpCommand(Context context, string[] args)
+        public AdminHelpCommand(Context context, string[] args)
         {
             Context = context;
             Args = args;
