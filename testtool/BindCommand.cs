@@ -17,7 +17,10 @@
 
         public void Execute()
         {
-            throw new System.NotImplementedException();
+            string queueName = Args[0];
+            string exchangeName = Args[1];
+            string routingKey = Args[2];
+            Context.Channel.QueueBind(queue: queueName, exchange: exchangeName, routingKey: routingKey, null);
         }
     }
 }

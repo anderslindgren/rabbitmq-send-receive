@@ -7,16 +7,17 @@ namespace RabbitREPL
     internal class ExchangeCommand : ICommand
     {
         public string Description =>
-            "bind exhanges and queues";
+            "Declares an Exchange";
         public string DetailedDescription =>
             @"Declare an Exchange
 
 Syntax:
-  exchange <exchangename> <exchangetype> <durable> <autoDelete>
+  exchange create <exchangeName> <exchangeType> <durable> <autoDelete>
+  exchange delete <exchangeName
 
   where 
-    exchangename - is the name of the new exchange
-    exhangetype  - is one of direct, topic, fanout and headers
+    exchangeName - is the name of the new exchange
+    exhangeType  - is one of direct, topic, fanout and headers
     durable      - true if the exchange should be durable
     autoDelete   - true if the exchange should automatically delete messages
             
@@ -33,15 +34,27 @@ Syntax:
 
         public void Execute()
         {
-            string exhange = Args[0];
-            string type = Args[1];
-            bool durable = bool.Parse(Args[2]);
-            bool autoDelete = bool.Parse(Args[3]);
-            Context.Channel.ExchangeDeclare(
-                exchange: exhange, 
-                type: type, 
-                durable: durable, 
-                autoDelete: autoDelete);
+            string command = Args[0];
+            string exhangeName = Args[1];
+
+            if (command.Equals("create"))
+            {
+                // TODO: Check number of arguments and add default values
+                string type = Args[2];
+                bool durable = bool.Parse(Args[3]);
+                bool autoDelete = bool.Parse(Args[4]);
+                Context.Channel.ExchangeDeclare(
+                    exchange: exhangeName, 
+                    type: type, 
+                    durable: durable, 
+                    autoDelete: autoDelete);
+            }
+            else if (command.Equals("delete"))
+            {
+                // TODO: Check number of arguments and add default values
+                bool ifUnused = bool.Parse(Args[2]);
+                Context.Channel.ExchangeDelete(exchange: exhangeName, ifUnused: ifUnused);
+            }
         }
     }
 }
